@@ -17,13 +17,14 @@ import android.widget.TextView;
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor sensor;
-    private int stepCount = 0;
-    private boolean isRunning = false;
+    private int stepCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
+
+        this.stepCount = 0;
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
@@ -38,11 +39,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         if (countSensor != null) {
             this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-            this.isRunning = true;
         } else {
             Log.d("sensor.present", "sensor is not present");
-            this.isRunning = false;
         }
+        
     }
 
     protected void onResume() {
@@ -65,18 +65,19 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor == this.sensor) {
             this.stepCount = (int) event.values[0];
+
             TextView tv = findViewById(R.id.stepView);
             tv.setText(String.valueOf(this.stepCount));
-            Log.d("sensor.step", Integer.toString(this.stepCount));
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        /* Tällä metodilla ei varsinaisesti tee mitään tähän projektiin,
+         mutta pitää lisätä koska rajapinta pakottaa.
+         */
     }
 
     public void updateUI() {
-
     }
 }
