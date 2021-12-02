@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,7 +15,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+            Katsotaan löytyykö preferenssi tiedosto, jos ei löydy
+            aloitetaan profiilin luonti aktiviteetti.
+        */
+
+        File pref = new File("/data/data/project.rt_running_tracker/shared_prefs/SavedUserProfileData.xml");
+        Intent intent = new Intent(this, ProfileActivity.class);
+
+        if (pref.exists()) {
+            Log.d("pref", "true");
+        } else {
+            startActivity(intent);
+        }
     }
+
+    //Nappien painelluksista avataan aktiviteetit.
 
     public void onStartClick(View v) {
         Intent intent = new Intent(this, ExerciseActivity.class);
