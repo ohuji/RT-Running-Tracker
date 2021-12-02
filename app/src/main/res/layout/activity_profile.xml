@@ -10,7 +10,11 @@
         android:id="@+id/bSaveProfile"
         android:layout_width="231dp"
         android:layout_height="77dp"
+        android:onClick="bSave"
         android:text="Save"
+        android:textColor="@color/grey"
+        android:textSize="34sp"
+        android:theme="@style/start_button_style"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.461"
@@ -25,6 +29,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.816"
@@ -37,6 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="User name"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.046"
@@ -49,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weight"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.043"
@@ -58,17 +65,18 @@
 
     <EditText
         android:id="@+id/editUserWeight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="273dp"
+        android:layout_height="53dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Weight"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.577"
+        app:layout_constraintHorizontal_bias="0.84"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.319" />
+        app:layout_constraintVertical_bias="0.318" />
 
     <EditText
         android:id="@+id/editUserHeight"
@@ -77,6 +85,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Height"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.571"
@@ -89,6 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Height"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.051"
@@ -98,8 +108,8 @@
 
     <RadioGroup
         android:id="@+id/radioGroupGender"
-        android:layout_width="352dp"
-        android:layout_height="153dp"
+        android:layout_width="354dp"
+        android:layout_height="144dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.322"
@@ -111,18 +121,34 @@
             android:id="@+id/rbMale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
             android:text="Male" />
 
         <RadioButton
             android:id="@+id/rbFemale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
             android:text="Female" />
 
         <RadioButton
             android:id="@+id/rbOther"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
             android:text="Other" />
     </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvSelectGender"
+        android:layout_width="187dp"
+        android:layout_height="27dp"
+        android:text="Select gender"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.071"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.514" />
 </androidx.constraintlayout.widget.ConstraintLayout>
