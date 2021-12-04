@@ -14,15 +14,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-public class ExerciseActivity extends AppCompatActivity implements SensorEventListener {
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Map;
+
+public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
     private SensorManager sensorManager;
     private Sensor sensor;
     private int stepCount;
+    private MapView mMapView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise);
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_exercise);
 
         this.stepCount = 0;
 
@@ -42,23 +51,57 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         } else {
             Log.d("sensor.present", "sensor is not present");
         }
-        
+
+        //mMapView variable is made from MapView map
+        mMapView = (MapView) findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.getMapAsync(this);
+
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
             sensorManager.registerListener(this, this.sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
+
+        mMapView.onResume();
     }
 
+    //map's position and marker is set
+    @Override
+    public void onMapReady(GoogleMap map)   {
+        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+    }
+
+    @Override
     protected void onPause() {
+        mMapView.onPause();
         super.onPause();
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
             sensorManager.unregisterListener(this, this.sensor);
         }
+    }
+
+    @Override
+    protected void onDestroy()  {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory()   {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
     }
 
     @Override
