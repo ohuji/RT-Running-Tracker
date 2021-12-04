@@ -9,6 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RTRunningTracker">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDsBQbMpaj7Wyu4a7kNZ7-cso31DFLjAJU" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
@@ -27,5 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>
