@@ -29,11 +29,18 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private MapView mMapView;
 
     @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_exercise);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_exercise);
+
+        //Nollataan laskurin arvo aina kun aktiviteetti avataan
 
         this.stepCount = 0;
+
+        /*
+            Jos luvat sensorien käyttöön ei olla annettu,
+            kysytään lupaa sensorien käyttöön.
+         */
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
@@ -107,7 +114,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor == this.sensor) {
-            this.stepCount = (int) event.values[0];
+            this.stepCount++;
 
             TextView tv = findViewById(R.id.stepView);
             tv.setText(String.valueOf(this.stepCount));
@@ -116,9 +123,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        /* Tällä metodilla ei varsinaisesti tee mitään tähän projektiin,
-         mutta pitää lisätä koska rajapinta pakottaa.
-         */
+        /*
+            Tällä metodilla ei varsinaisesti tee mitään tähän projektiin,
+            mutta pitää lisätä koska rajapinta pakottaa.
+        */
     }
 
     public void updateUI() {
