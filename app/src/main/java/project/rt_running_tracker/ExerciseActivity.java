@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -20,6 +22,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
@@ -27,15 +31,32 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private Sensor sensor;
     private int stepCount;
     private MapView mMapView;
+    private double travelLength;
+    private double stepLength;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
-        //Nollataan laskurin arvo aina kun aktiviteetti avataan
+        //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
         this.stepCount = 0;
+        this.travelLength = 0.0;
+
+        /*
+            Asetetaan 0.415 kerroin, koska pituus * 0.415 = askelpituus.
+            Haetaan preferenssistä käyttäjän asettama pituus, minkä
+            jälkeen lasketaan askelpituus.
+         */
+
+        double multiplier = 0.415;
+
+        SharedPreferences userPref = getSharedPreferences("SavedUserProfileData", Activity.MODE_PRIVATE);
+
+        int height = userPref.getInt("User height", 0);
+
+        this.stepLength = height * multiplier;
 
         /*
             Jos luvat sensorien käyttöön ei olla annettu,
@@ -64,7 +85,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         mMapView.onCreate(savedInstanceState);
 
         mMapView.getMapAsync(this);
-
     }
 
     @Override
@@ -116,6 +136,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         if (event.sensor == this.sensor) {
             this.stepCount++;
 
+            this.travelLength = this.stepCount * this.stepLength / 100.0;
+
+            //Muunnetaan double kahden desimaalin tarkaksi, käyttäen Javan BigDecimalia.
+
+            BigDecimal bd = new BigDecimal(this.travelLength).setScale(2, RoundingMode.HALF_UP);
+            Double newLength = bd.doubleValue();
+
+            TextView tv1 = findViewById(R.id.travelLengthView);
+            tv1.setText(newLength + "m");
             TextView tv = findViewById(R.id.stepView);
             tv.setText(String.valueOf(this.stepCount));
         }
