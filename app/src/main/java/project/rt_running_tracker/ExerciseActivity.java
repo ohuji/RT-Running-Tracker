@@ -1,6 +1,7 @@
 package project.rt_running_tracker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -12,15 +13,20 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,9 +36,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private SensorManager sensorManager;
     private Sensor sensor;
     private int stepCount;
-    private MapView mMapView;
     private double travelLength;
     private double stepLength;
+    private double newLength;
+    private GoogleMap mMap;
+    private MapView mMapView;
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +74,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-                    requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
+            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
         } else {
             Log.d("sensor.permission", "denied");
         }
@@ -100,8 +109,16 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     //map's position and marker is set
     @Override
-    public void onMapReady(GoogleMap map)   {
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+    public void onMapReady(GoogleMap googlemap) {
+        // getLocation(map);
+        /*LatLng sydney = new LatLng(-34, 151);
+        map.addMarker(new MarkerOptions().position(sydney).title("Marker"));*/
+
+        mMap = googlemap;
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions()
+                .position(sydney)
+                .title("Marker in Sydney"));
     }
 
     @Override
@@ -115,12 +132,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    protected void onDestroy()  {
+    protected void onDestroy() {
         super.onDestroy();
     }
 
     @Override
-    public void onLowMemory()   {
+    public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
@@ -141,12 +158,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             //Muunnetaan double kahden desimaalin tarkaksi, käyttäen Javan BigDecimalia.
 
             BigDecimal bd = new BigDecimal(this.travelLength).setScale(2, RoundingMode.HALF_UP);
-            Double newLength = bd.doubleValue();
+            newLength = bd.doubleValue();
 
-            TextView tv1 = findViewById(R.id.travelLengthView);
-            tv1.setText(newLength + "m");
-            TextView tv = findViewById(R.id.stepView);
-            tv.setText(String.valueOf(this.stepCount));
+            updateUI();
         }
     }
 
@@ -158,6 +172,62 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         */
     }
 
-    public void updateUI() {
+    private void getLocation(GoogleMap map) {
+
+        //Kysytään luvat käyttäjän paikannukseen, ellei lupia ole jo annettu
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+        } else {
+            Log.d("coarse_location.permission", "denied");
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+        } else {
+            Log.d("fine_location.permission", "denied");
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 101);
+        } else {
+            Log.d("background_location.permission", "denied");
+        }
+
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // Saatiin käyttäjän viimeinen tiedetty sijainti
+                    if (location != null) {
+                        //jos sijainti on varmasti tiedossa, asetetaan merkki käyttäjän kohdalle kartalla
+                        setMarker(map, location);
+                    }
+                }
+            });
+        }
     }
+
+    public void setMarker(GoogleMap map, Location location)    {
+
+        //map.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
+        //map.addMarker(new MarkerOptions().position(new LatLng(7, 7)).title("Marker"));
+
+    }
+
+        private void updateUI () {
+
+            TextView tv1 = findViewById(R.id.travelLengthView);
+            tv1.setText(newLength + "m");
+            TextView tv = findViewById(R.id.stepView);
+            tv.setText(String.valueOf(this.stepCount));
+
+        }
 }
