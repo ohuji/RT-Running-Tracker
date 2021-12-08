@@ -107,18 +107,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         mMapView.onResume();
     }
 
-    //map's position and marker is set
     @Override
-    public void onMapReady(GoogleMap googlemap) {
-        // getLocation(map);
-        /*LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker"));*/
-
-        mMap = googlemap;
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
+    public void onMapReady(GoogleMap googleMap) {
+        getLocation(googleMap);
     }
 
     @Override
@@ -172,7 +163,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         */
     }
 
-    private void getLocation(GoogleMap map) {
+    private void getLocation(GoogleMap googlemap) {
 
         //Kysytään luvat käyttäjän paikannukseen, ellei lupia ole jo annettu
 
@@ -195,6 +186,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Log.d("background_location.permission", "denied");
         }
 
+        //tarkastetaan onko käyttäjä antanut luvat paikannukseen
+        //mikäli on haetaan käyttäjän viimeisin sijainti
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
@@ -208,16 +201,17 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                     // Saatiin käyttäjän viimeinen tiedetty sijainti
                     if (location != null) {
                         //jos sijainti on varmasti tiedossa, asetetaan merkki käyttäjän kohdalle kartalla
-                        setMarker(map, location);
+                        setMarker(googlemap, location);
                     }
                 }
             });
         }
     }
 
+    //asetetaan merkki käyttäjän viimeiseen sijaintiin
     public void setMarker(GoogleMap map, Location location)    {
-
-        //map.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
+        Log.d("debug", String.valueOf(location.getLatitude()));
+        map.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
         //map.addMarker(new MarkerOptions().position(new LatLng(7, 7)).title("Marker"));
 
     }
