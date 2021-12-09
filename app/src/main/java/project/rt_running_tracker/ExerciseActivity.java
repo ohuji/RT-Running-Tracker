@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -21,10 +20,11 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,34 +32,49 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
+
+    //Sensori muuttujat
     private SensorManager sensorManager;
     private Sensor sensor;
     private int stepCount;
     private double travelLength;
     private double stepLength;
     private double newLength;
+
+    //Google Maps muuttujat
     private GoogleMap mMap;
     private MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
+
+    Handler handler = new Handler();
+    Runnable runnable;
+    protected boolean keepGoing = true;
+    private double lat = 0.0;
+    private double lng = 0.0;
+  
     private int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
+
+        //haetaan ja kysytään käyttäjän lupia
+        permissions();
 
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
@@ -79,18 +94,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         int height = userPref.getInt("User height", 0);
 
         this.stepLength = height * multiplier;
-
-        /*
-            Jos luvat sensorien käyttöön ei olla annettu,
-            kysytään lupaa sensorien käyttöön.
-         */
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
-        } else {
-            Log.d("sensor.permission", "denied");
-        }
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -122,8 +125,27 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        /*
+        Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
+        Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
+        mikä sallii laitteen hyödyntämään nykyistä sijantia
+         */
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            googleMap.setMyLocationEnabled(true);
+        }
+
+        //toistetaan drawPolylines metodi X sekunnin välein
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, 3000);
+
+                drawPolylines(googleMap);
+
+            }
+        }, 3000);
         this.mMap = googleMap;
-        getLocation(googleMap);
     }
 
     @Override
@@ -177,10 +199,19 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         */
     }
 
-    private void getLocation(GoogleMap googlemap) {
+    private void permissions()  {
 
-        //Kysytään luvat käyttäjän paikannukseen, ellei lupia ole jo annettu
+        /*
+            Jos luvat sensorien käyttöön tai käyttäjän paikantamiseen ei olla annettu,
+            kysytään lupaa niiden käyttöön.
+         */
 
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 101);
+        } else {
+            Log.d("sensor.permission", "denied");
+        }
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -200,11 +231,30 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Log.d("background_location.permission", "denied");
         }
 
+        //Haetaan alkukoordinaatit lat ja lng muuttujille
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+        //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    lat = location.getLatitude();
+                    lng = location.getLongitude();
+                }
+            }
+        });
+        }
+    }
+
+    private void drawPolylines(GoogleMap googlemap) {
+
         //tarkastetaan onko käyttäjä antanut luvat paikannukseen
         //mikäli on haetaan käyttäjän viimeisin sijainti
 
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
             //LocationServices avulla tallennetaan paikannustiedot muuttujaan
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -212,22 +262,56 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    // Saatiin käyttäjän viimeinen tiedetty sijainti
+
+                    //haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
+
                     if (location != null) {
-                        //jos sijainti on varmasti tiedossa, asetetaan merkki käyttäjän kohdalle kartalla
-                        setMarker(googlemap, location);
+
+                        //piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
+
+                        Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
+                                .add(new LatLng(lat, lng),
+                                        new LatLng(location.getLatitude(), location.getLongitude())));
+
+                        //tehdään joku tagi
+                        polyline1.setTag("A");
+
+                        //tallennetaan viimeisimmät koordinaatit muuttujiin
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
+                    }
+                }
+            });
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+
+                    //haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
+
+
+                    if (location != null) {
+
+                        //piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
+
+                        Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
+                                .add(new LatLng(lat, lng),
+                                        new LatLng(location.getLatitude(), location.getLongitude())));
+
+                        //tehdään joku tagi
+                        polyline1.setTag("A");
+
+                        //tallennetaan viimeisimmät koordinaatit muuttujiin
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
                     }
                 }
             });
         }
-    }
-
-    //asetetaan merkki käyttäjän viimeiseen sijaintiin
-    public void setMarker(GoogleMap map, Location location)    {
-        Log.d("debug", String.valueOf(location.getLatitude()));
-        map.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
-        //map.addMarker(new MarkerOptions().position(new LatLng(7, 7)).title("Marker"));
-
     }
 
     public void onStopButtonClick(View v) {
