@@ -1,18 +1,24 @@
 package project.rt_running_tracker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -30,8 +36,14 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
@@ -47,11 +59,14 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private GoogleMap mMap;
     private MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
+
     Handler handler = new Handler();
     Runnable runnable;
     protected boolean keepGoing = true;
     private double lat = 0.0;
     private double lng = 0.0;
+  
+    private int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +145,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
             }
         }, 3000);
+        this.mMap = googleMap;
     }
 
     @Override
@@ -277,6 +293,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
                     //haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
 
+
                     if (location != null) {
 
                         //piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
@@ -297,12 +314,75 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
-    private void updateUI () {
+    public void onStopButtonClick(View v) {
+        final GoogleMap.SnapshotReadyCallback snapshotReadyCallback = new GoogleMap.SnapshotReadyCallback() {
+            Bitmap bitmap;
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onSnapshotReady(@Nullable Bitmap snap) {
+                bitmap = snap;
+                try {
+                    String path = "/data/data/project.rt_running_tracker/files/";
 
+                    File pref = new File("/data/data/project.rt_running_tracker/shared_prefs/index.xml");
+
+                    if (pref.exists()) {
+                        SharedPreferences index = getSharedPreferences("index" ,Activity.MODE_PRIVATE);
+                        int j = index.getInt("i", 0);
+                        i = j;
+                        i++;
+
+                        SharedPreferences.Editor editor = index.edit();
+
+                        editor.putInt("i", i);
+                        editor.commit();
+                    } else {
+                        i = 0;
+
+                        SharedPreferences index = getSharedPreferences("index", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = index.edit();
+
+                        editor.putInt("i", i);
+                        editor.commit();
+                    }
+
+                    FileOutputStream fos = new FileOutputStream(path + "image" + i + java.time.LocalDate.now() + ".png");
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+
+                    fos.flush();
+                    fos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        GoogleMap.OnMapLoadedCallback mapLoadedCallback = new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                mMap.snapshot(snapshotReadyCallback);
+            }
+        };
+        mMap.setOnMapLoadedCallback(mapLoadedCallback);
+
+        SharedPreferences runPref = getSharedPreferences("juoksu" + i, MODE_PRIVATE);
+        SharedPreferences.Editor editor = runPref.edit();
+
+        Float f = (float) newLength;
+
+        editor.putFloat("matka", f);
+        editor.putInt("askeleet", this.stepCount);
+
+        editor.commit();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void updateUI () {
         TextView tv1 = findViewById(R.id.travelLengthView);
         tv1.setText(newLength + "m");
         TextView tv = findViewById(R.id.stepView);
-        tv.setText(String.valueOf(this.stepCount));
-
+        tv.setText(this.stepCount + " askelta");
     }
 }
