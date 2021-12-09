@@ -281,6 +281,16 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         };
         mMap.setOnMapLoadedCallback(mapLoadedCallback);
 
+        SharedPreferences runPref = getSharedPreferences("juoksu" + i, MODE_PRIVATE);
+        SharedPreferences.Editor editor = runPref.edit();
+
+        Float f = (float) newLength;
+
+        editor.putFloat("matka", f);
+        editor.putInt("askeleet", this.stepCount);
+
+        editor.commit();
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
