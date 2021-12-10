@@ -42,6 +42,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -314,6 +315,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStopButtonClick(View v) {
         final GoogleMap.SnapshotReadyCallback snapshotReadyCallback = new GoogleMap.SnapshotReadyCallback() {
             Bitmap bitmap;
@@ -376,6 +378,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         editor.putFloat("matka", f);
         editor.putInt("askeleet", this.stepCount);
+        //Testi tallentaa päivä preferenssiin
+        //LocalDate paiva = LocalDate.now();
+        editor.putString("testi", "errr");
+        editor.putString("päivä", i+LocalDate.now().toString());
 
         editor.commit();
 

@@ -2,7 +2,10 @@ package project.rt_running_tracker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,26 +13,46 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class HistoryActivity extends AppCompatActivity {
 
-    public static final String EXTRA = "hakkarainen.harjoitus6.nimi";
+    private int savedIndex;
+    private int savedStep;
+    private String savedDateData;
+    private float savedCalories;
+    private float savedJourney;
+
+
+    //public static Context contextOfApplication;
+
+    public static final String EXTRA = "HistoryDetailsActivityyn";
     private static final String TAG = "tsuptsup";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-/*
+
+        getSavedIndex();
+        //HistoryData myClass = new HistoryData();
+        //contextOfApplication = getApplicationContext();
+        getExcerciseData();
+
+
+        // ArrayList<History> historyData = new ArrayList<History>();
+
+
+        //getSavedDateData();
+
+
         ListView lv = (ListView) findViewById(R.id.lvHistoryData);
 
-        lv.setAdapter(new ArrayAdapter<HistoryData>(
+        lv.setAdapter(new ArrayAdapter<History>(
                 this,
                 android.R.layout.simple_list_item_1,
-
-                //HistoryData.
+                HistoryData.getInstance().getHistoryData())
         );
-
-
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -40,8 +63,48 @@ public class HistoryActivity extends AppCompatActivity {
                 startActivity(nextActivity);
             }
         });
+    }
+
+    public String getSavedDateData() {
+        System.out.println(savedDateData);
+        return savedDateData;
+    }
+
+    public void getSavedIndex() {
+        SharedPreferences prefGet = getSharedPreferences("index", Activity.MODE_PRIVATE);
+        savedIndex = prefGet.getInt("i", 0);
+    }
+
+    public void getExcerciseData() {
+        int checker = 0;
+        getSavedIndex();
+        for (int r = 0; r < savedIndex; r++) {
+            SharedPreferences prefGet1 = getSharedPreferences("juoksu" + r, Activity.MODE_PRIVATE);
+            savedStep = prefGet1.getInt("askeleet", 0);
+            savedCalories = prefGet1.getFloat("kalorit", 0);
+            savedJourney = prefGet1.getFloat("matka", 0);
+            savedDateData = prefGet1.getString("päivä", "1.1.0001");
+
+            //for(int e = 0; e <= savedIndex; e++) {
+            //if(checker < savedIndex) {
+            HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney);
+            //}
+        //}
+        //checker++;
+    }
 
     }
 
+    /*
+    public static Context getContextOfApplication(){
+        return contextOfApplication;
+    }
+     */
+}
+
+/*
+//Testi tallentaa päivä preferenssiin
+        LocalDate paiva = LocalDate.now();
+        editor.putString("päivä", i+paiva.toString());
  */
-}}
+
