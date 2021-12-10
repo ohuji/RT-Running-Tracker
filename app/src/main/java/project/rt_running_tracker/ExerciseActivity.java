@@ -365,7 +365,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         };
         mMap.setOnMapLoadedCallback(mapLoadedCallback);
 
-        SharedPreferences runPref = getSharedPreferences("juoksu" + i, MODE_PRIVATE);
+        SharedPreferences index = getSharedPreferences("index", Activity.MODE_PRIVATE);
+        int j = index.getInt("i", 0);
+        i = j;
+
+        SharedPreferences runPref = getSharedPreferences("juoksu" + i, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = runPref.edit();
 
         Float f = (float) newLength;
