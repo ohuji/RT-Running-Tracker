@@ -19,10 +19,14 @@ public class HistoryDetailsActivity extends AppCompatActivity {
 
         Bundle b = getIntent().getExtras();
         int i = b.getInt(HistoryActivity.EXTRA);
-
         String datei = HistoryData.getInstance().gethistoryData(i).toString();
 
-        File mapImage = new  File("/data/data/project.rt_running_tracker/files/image"+datei+".png");
+        int j = Integer.parseInt(datei.substring(0, 1));
+        String a = datei.substring(1);
+        j++;
+        String s = j + a;
+        
+        File mapImage = new  File("/data/data/project.rt_running_tracker/files/image"+s+".png");
 
         if(mapImage.exists()){
 

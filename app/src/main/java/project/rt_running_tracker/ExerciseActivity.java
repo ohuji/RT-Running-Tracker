@@ -357,13 +357,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                     if (pref.exists()) {
                         SharedPreferences index = getSharedPreferences("index" ,Activity.MODE_PRIVATE);
                         int j = index.getInt("i", 0);
+
                         i = j;
-                        i++;
-
-                        SharedPreferences.Editor editor = index.edit();
-
-                        editor.putInt("i", i);
-                        editor.commit();
                     } else {
                         i = 0;
 
@@ -410,6 +405,14 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         editor.putString("päivä", i+LocalDate.now().toString());
 
         editor.commit();
+
+        i++;
+
+        SharedPreferences.Editor indexEditor = index.edit();
+
+        indexEditor.putInt("i", i);
+        indexEditor.commit();
+
 
         //Pysäyttää handlerin
         handler.removeCallbacks(runnable);
