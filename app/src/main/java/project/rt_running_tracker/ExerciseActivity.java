@@ -1,5 +1,7 @@
 package project.rt_running_tracker;
 
+import static com.google.android.gms.maps.CameraUpdateFactory.zoomIn;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -28,12 +30,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
@@ -60,12 +64,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private GoogleMap mMap;
     private MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
-
     Handler handler = new Handler();
     Runnable runnable;
-    protected boolean keepGoing = true;
     private double lat = 0.0;
     private double lng = 0.0;
+    Context context = this;
   
     private int i;
 
@@ -74,7 +77,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
-        //haetaan ja kysytään käyttäjän lupia
+        //Haetaan ja kysytään käyttäjän lupia
         permissions();
 
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
@@ -106,7 +109,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Log.d("sensor.present", "sensor is not present");
         }
 
-        //mMapView variable is made from MapView map
+        //mMapView muuttuja tehdään MapView kartasta
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
 
@@ -129,15 +132,41 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         /*
         Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
+
         Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
         mikä sallii laitteen hyödyntämään nykyistä sijantia
+
+        Haetaan ja asetetaan myös alkukoordinaatit lat ja lng muuttujille
+
+        Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää
          */
 
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
             googleMap.setMyLocationEnabled(true);
+
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+
+                        //Asetetaan lat ja lng muuttujat
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
+
+                        //Liikutetaan kamera käyttäjän kohdalle ja zoomataan lähemmäs
+                        LatLng currentLocation = new LatLng(lat, lng);
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15.0f));
+                    }
+                }
+            });
         }
 
-        //toistetaan drawPolylines metodi X sekunnin välein
+        //Toistetaan drawPolylines metodi X sekunnin välein
         handler.postDelayed(runnable = new Runnable() {
             public void run() {
                 handler.postDelayed(runnable, 3000);
@@ -203,7 +232,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private void permissions()  {
 
         /*
-            Jos luvat sensorien käyttöön tai käyttäjän paikantamiseen ei olla annettu,
+            Jos lupia sensorien käyttöön tai käyttäjän paikantamiseen ei olla annettu,
             kysytään lupaa niiden käyttöön.
          */
 
@@ -231,59 +260,17 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         } else {
             Log.d("background_location.permission", "denied");
         }
-
-        //Haetaan alkukoordinaatit lat ja lng muuttujille
-
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-        //LocationServices avulla tallennetaan paikannustiedot muuttujaan
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    lat = location.getLatitude();
-                    lng = location.getLongitude();
-                }
-            }
-        });
-        }
     }
 
     private void drawPolylines(GoogleMap googlemap) {
 
-        //tarkastetaan onko käyttäjä antanut luvat paikannukseen
-        //mikäli on haetaan käyttäjän viimeisin sijainti
+        /*
+        Tarkastetaan onko käyttäjä antanut luvat paikannukseen
+        Mikäli on haetaan käyttäjän viimeisin sijainti
+         */
 
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-
-            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-
-                    //haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
-
-                    if (location != null) {
-
-                        //piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
-
-                        Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
-                                .add(new LatLng(lat, lng),
-                                        new LatLng(location.getLatitude(), location.getLongitude())));
-
-                        //tehdään joku tagi
-                        polyline1.setTag("A");
-
-                        //tallennetaan viimeisimmät koordinaatit muuttujiin
-                        lat = location.getLatitude();
-                        lng = location.getLongitude();
-                    }
-                }
-            });
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
             //LocationServices avulla tallennetaan paikannustiedot muuttujaan
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -292,27 +279,66 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 @Override
                 public void onSuccess(Location location) {
 
-                    //haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
-
+                    //Haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
 
                     if (location != null) {
 
-                        //piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
+                        //Piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
 
                         Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
                                 .add(new LatLng(lat, lng),
                                         new LatLng(location.getLatitude(), location.getLongitude())));
 
-                        //tehdään joku tagi
+                        //Asettaa polylinen värin, leveyden ja päätyjen muodon
+                        polyline1.setColor(ContextCompat.getColor(context, R.color.teal_200));
+                        polyline1.setWidth(20);
+                        polyline1.setEndCap(new RoundCap());
+                        polyline1.setStartCap(new RoundCap());
+
+                        //Tehdään joku tagi
                         polyline1.setTag("A");
 
-                        //tallennetaan viimeisimmät koordinaatit muuttujiin
+                        //Tallennetaan viimeisimmät koordinaatit muuttujiin
                         lat = location.getLatitude();
                         lng = location.getLongitude();
                     }
                 }
             });
         }
+
+        /*
+        !! TÄMÄN ELSE IF EHTOLAUSEEN SISÄLLÖN VOI POISTAA KOKONAAN, JOS SATUT TESTAAMAAN TRACKINGIA EIKÄ SE HEITÄ PAIKANNUSTULOSTA AIEMPAA ENEMPÄÄ !!
+
+
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+
+                    //Haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
+
+                    if (location != null) {
+
+                        //Piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
+
+                        Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
+                                .add(new LatLng(lat, lng),
+                                        new LatLng(location.getLatitude(), location.getLongitude())));
+
+                        //Tehdään joku tagi
+                        polyline1.setTag("A");
+
+                        //Tallennetaan viimeisimmät koordinaatit muuttujiin
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
+                    }
+                }
+            });
+        }*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -384,6 +410,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         editor.putString("päivä", i+LocalDate.now().toString());
 
         editor.commit();
+
+        //Pysäyttää handlerin
+        handler.removeCallbacks(runnable);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
