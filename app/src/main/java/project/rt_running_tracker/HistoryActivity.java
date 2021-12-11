@@ -18,11 +18,13 @@ import java.util.ArrayList;
 public class HistoryActivity extends AppCompatActivity {
 
     private int savedIndex;
+    private int savedChecker;
     private int savedStep;
     private String savedDateData;
     private float savedCalories;
     private float savedJourney;
 
+    //private int checker;
 
     //public static Context contextOfApplication;
 
@@ -39,10 +41,9 @@ public class HistoryActivity extends AppCompatActivity {
         //contextOfApplication = getApplicationContext();
         getExcerciseData();
 
+        //checker = 0;
 
         // ArrayList<History> historyData = new ArrayList<History>();
-
-
         //getSavedDateData();
 
 
@@ -75,34 +76,46 @@ public class HistoryActivity extends AppCompatActivity {
         savedIndex = prefGet.getInt("i", 0);
     }
 
+    public void getSavedChecker() {
+        SharedPreferences prefGet = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
+        savedChecker = prefGet.getInt("checker", 0);
+    }
+
     public void getExcerciseData() {
-        int checker = 0;
+
+        getSavedChecker();
         getSavedIndex();
-        for (int r = 0; r < savedIndex; r++) {
+
+        for (int r = 0; r <= savedIndex; r++) {
             SharedPreferences prefGet1 = getSharedPreferences("juoksu" + r, Activity.MODE_PRIVATE);
             savedStep = prefGet1.getInt("askeleet", 0);
             savedCalories = prefGet1.getFloat("kalorit", 0);
             savedJourney = prefGet1.getFloat("matka", 0);
             savedDateData = prefGet1.getString("päivä", "1.1.0001");
 
-            //for(int e = 0; e <= savedIndex; e++) {
-            //if(checker < savedIndex) {
-            HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney);
-            //}
-        //}
-        //checker++;
-    }
 
-    }
 
-    /*
-    public static Context getContextOfApplication(){
-        return contextOfApplication;
+
+            if (savedChecker < savedIndex) {
+                savedChecker++;
+                HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney);
+
+                SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor prefEditor = prefPut.edit();
+                prefEditor.putInt("checker", savedChecker);
+                prefEditor.commit();
+                
+            }
+
+        }
     }
-     */
 }
 
 /*
+ /*
+    public static Context getContextOfApplication(){
+        return contextOfApplication;
+    }
 //Testi tallentaa päivä preferenssiin
         LocalDate paiva = LocalDate.now();
         editor.putString("päivä", i+paiva.toString());

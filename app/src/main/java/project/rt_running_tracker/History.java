@@ -1,5 +1,7 @@
 package project.rt_running_tracker;
 
+import java.util.ArrayList;
+
 public class History {
 
     private int step;
@@ -30,4 +32,5 @@ public class History {
     public String toString(){
         return this.dateData;
     }
+
 }
