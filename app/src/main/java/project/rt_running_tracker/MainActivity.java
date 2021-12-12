@@ -19,10 +19,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-            Katsotaan löytyykö preferenssi tiedosto, jos ei löydy
-            aloitetaan profiilin luonti aktiviteetti.
-        */
         //Lisätty checker, joka tallennetaan preferenssiin
        /*
         SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
@@ -32,21 +28,27 @@ public class MainActivity extends AppCompatActivity {
 
         */
 
-        File pref = new File("/data/data/project.rt_running_tracker/shared_prefs/SavedUserProfileData.xml");
-        Intent intent = new Intent(this, ProfileActivity.class);
-
-        if (pref.exists()) {
-            Log.d("pref", "true");
-        } else {
-            startActivity(intent);
-        }
     }
 
-    //Nappien painelluksista avataan aktiviteetit.
+    //Nappien painellus metodit.
 
     public void onStartClick(View v) {
+        File pref = new File("/data/data/project.rt_running_tracker/shared_prefs/SavedUserProfileData.xml");
+
         Intent intent = new Intent(this, ExerciseActivity.class);
-        startActivity(intent);
+        Intent profIntent = new Intent(this, ProfileActivity.class);
+
+        /*
+            Katsotaan löytyykö preferenssi tiedosto, jos ei löydy
+            aloitetaan profiilin luonti aktiviteetti. Jos löytyy
+            aloitetaan suoritus aktiviteetti.
+        */
+
+        if (pref.exists()) {
+            startActivity(intent);
+        } else {
+            startActivity(profIntent);
+        }
     }
 
     public void onHistoryClick(View v) {

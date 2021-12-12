@@ -3,6 +3,7 @@ package project.rt_running_tracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -85,6 +86,9 @@ public class ProfileActivity extends AppCompatActivity {
         prefEditor.putInt("User height", newProfile.getUserHeight());
         prefEditor.putString("User gender", newProfile.getUserGender());
         prefEditor.commit();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     //Haetaan preferenssissä olevan profiilin tiedot
