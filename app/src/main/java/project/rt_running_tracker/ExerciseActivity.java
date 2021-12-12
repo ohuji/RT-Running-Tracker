@@ -1,8 +1,7 @@
 package project.rt_running_tracker;
 
-import static com.google.android.gms.maps.CameraUpdateFactory.zoomIn;
+import static java.security.AccessController.getContext;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +25,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
@@ -45,10 +44,7 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Map;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
@@ -110,7 +106,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
 
         //mMapView muuttuja tehdään MapView kartasta
-        mMapView = (MapView) findViewById(R.id.map);
+        mMapView = (MapView) findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
         mMapView.getMapAsync(this);
@@ -136,7 +132,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
         mikä sallii laitteen hyödyntämään nykyistä sijantia
 
-        Haetaan ja asetetaan myös alkukoordinaatit lat ja lng muuttujille
+        Kartan POI pisteet otetaan pois käyttämällä json tiedostoa
+
+        Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille
 
         Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää
          */
@@ -145,6 +143,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
             googleMap.setMyLocationEnabled(true);
+
+            googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.map_style));
 
             //LocationServices avulla tallennetaan paikannustiedot muuttujaan
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -424,6 +426,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         TextView tv1 = findViewById(R.id.travelLengthView);
         tv1.setText(newLength + "m");
         TextView tv = findViewById(R.id.stepView);
-        tv.setText(this.stepCount + " askelta");
+        tv.setText(this.stepCount + "");
     }
 }
