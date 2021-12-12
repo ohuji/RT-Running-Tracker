@@ -15,7 +15,7 @@ public class ProfileData {
         this.userGender = userGender;
     }
 
-
+    //Luotu metodit joilla saadaan haettua käyttäjän syöttämät tiedot
     public String getUserName(){
         return this.userName;
     }

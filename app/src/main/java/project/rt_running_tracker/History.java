@@ -17,6 +17,7 @@ public class History {
         this.journey = journey;
     }
 
+    //Metodeilla saadaan haettua tarvittava tieto, joka näytetään HistoryDetailsActivityssä
     public String getStep() {
         return String.valueOf(this.step);
     }

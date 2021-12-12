@@ -24,10 +24,17 @@ public class HistoryData {
         return historyData;
     }
 
+    //Metodin avulla saadaan valittu indeksi
     public History gethistoryData(int i) {
         return historyData.get(i);
     }
 
+    //Metodi tyhjentää listan
+    public void clearList (){
+        this.historyData.clear();
+    }
+
+    //Metodi lisää Arraylistiin
     public void add (int step, String dateData, float calories, float journey){
         History h = new History(step, dateData, calories, journey);
         this.historyData.add(h);

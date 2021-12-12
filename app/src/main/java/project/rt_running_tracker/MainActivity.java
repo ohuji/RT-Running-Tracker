@@ -13,7 +13,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int checker = 0;
+    //private int checker = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,11 +24,13 @@ public class MainActivity extends AppCompatActivity {
             aloitetaan profiilin luonti aktiviteetti.
         */
         //Lisätty checker, joka tallennetaan preferenssiin
-        //checker = 0;
+       /*
         SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = prefPut.edit();
         prefEditor.putInt("checker", checker);
         prefEditor.commit();
+
+        */
 
         File pref = new File("/data/data/project.rt_running_tracker/shared_prefs/SavedUserProfileData.xml");
         Intent intent = new Intent(this, ProfileActivity.class);

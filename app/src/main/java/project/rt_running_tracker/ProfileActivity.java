@@ -27,6 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         getProfileData();
 
+        //Haetaan tekstinsyöttökenttään tiedot preferensseistä
         TextView settii = findViewById(R.id.editUserName);
         settii.setText(savedUserName);
 
@@ -38,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         genderSelected();
 
+        //Tarkastetaan mikä sukupuoli on preferenssissä ja asetaan radiobutton valituksi sen mukaan
         if(savedUserGender.equals("Male")){
             RadioButton maleRadioButton = (RadioButton) findViewById(R.id.rbMale);
             maleRadioButton.setChecked(true);
@@ -60,6 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
         saveProfile();
     }
 
+    //Tallennetaan syötekentässä oleva tieto preferenssiin
     public void saveProfile() {
 
         EditText editedName = (EditText) findViewById(R.id.editUserName);
@@ -84,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
         prefEditor.commit();
     }
 
+    //Haetaan preferenssissä olevan profiilin tiedot
     public void getProfileData() {
         SharedPreferences prefGet = getSharedPreferences("SavedUserProfileData" ,Activity.MODE_PRIVATE);
         savedUserName = prefGet.getString("User name", "profilename");
@@ -92,6 +96,7 @@ public class ProfileActivity extends AppCompatActivity {
         savedUserGender = prefGet.getString("User gender", "Other");
     }
 
+    //Katsotaan mikä radiobutton on painettuna ja palautetaan sen perusteella sukupuoli Stringinä, joka voidaan tallentaa preferenssiin
     public String genderSelected() {
         RadioGroup rg = (RadioGroup) findViewById(R.id.radioGroupGender);
         int id = rg.getCheckedRadioButtonId();

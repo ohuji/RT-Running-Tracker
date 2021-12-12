@@ -24,10 +24,6 @@ public class HistoryActivity extends AppCompatActivity {
     private float savedCalories;
     private float savedJourney;
 
-    //private int checker;
-
-    //public static Context contextOfApplication;
-
     public static final String EXTRA = "HistoryDetailsActivityyn";
     private static final String TAG = "tsuptsup";
 
@@ -36,17 +32,14 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        //Haetaan aluksi metodeilla tarvittavat tiedot listan rakentamiseen. Ja tyhjennetään olemassa oleva lista
+        clearHistoryList();
+
         getSavedIndex();
-        //HistoryData myClass = new HistoryData();
-        //contextOfApplication = getApplicationContext();
+
         getExcerciseData();
 
-        //checker = 0;
-
-        // ArrayList<History> historyData = new ArrayList<History>();
-        //getSavedDateData();
-
-
+        //Rakennetaan lista, johon saadaan näkyviin juoksujen indeksi + pvm
         ListView lv = (ListView) findViewById(R.id.lvHistoryData);
 
         lv.setAdapter(new ArrayAdapter<History>(
@@ -66,58 +59,51 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
-    public String getSavedDateData() {
-        System.out.println(savedDateData);
-        return savedDateData;
-    }
-
+    //Haetaan preferenssiin tallennettu indeksi
     public void getSavedIndex() {
         SharedPreferences prefGet = getSharedPreferences("index", Activity.MODE_PRIVATE);
         savedIndex = prefGet.getInt("i", 0);
     }
 
+    //Haetaan preferenssiin tallennettu checker arvo
+    /*
     public void getSavedChecker() {
         SharedPreferences prefGet = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
         savedChecker = prefGet.getInt("checker", 0);
     }
 
+     */
+
+    //Tyhjennetään vanha lista, jolloin ei luoda montaa listaa näkymään
+    public void clearHistoryList() {
+        HistoryData.getInstance().clearList();
+    }
+
+    //Haetaan tarvittava juoksu data preferenssistä.
     public void getExcerciseData() {
 
-        getSavedChecker();
+       // getSavedChecker();
         getSavedIndex();
 
-        for (int r = 0; r <= savedIndex; r++) {
+        //Loopissa haetaan r muuttujan avulla kaikkien juoksujen tallennetut tiedot
+        for (int r = 0; r < savedIndex; r++) {
             SharedPreferences prefGet1 = getSharedPreferences("juoksu" + r, Activity.MODE_PRIVATE);
             savedStep = prefGet1.getInt("askeleet", 0);
             savedCalories = prefGet1.getFloat("kalorit", 0);
             savedJourney = prefGet1.getFloat("matka", 0);
             savedDateData = prefGet1.getString("päivä", "1.1.0001");
 
-
-
-
-            if (savedChecker < savedIndex) {
-                savedChecker++;
+            //Lisätään listaan. Ja tallennetaan muuttunut checker arvo uudestaan preferenssiin
+            //if (savedChecker < savedIndex) {
+            //    savedChecker++;
                 HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney);
 
-                SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor prefEditor = prefPut.edit();
-                prefEditor.putInt("checker", savedChecker);
-                prefEditor.commit();
-                
-            }
-
+            //    SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
+            //    SharedPreferences.Editor prefEditor = prefPut.edit();
+            //    prefEditor.putInt("checker", savedChecker);
+            //    prefEditor.commit();
+            //}
         }
     }
 }
-
-/*
- /*
-    public static Context getContextOfApplication(){
-        return contextOfApplication;
-    }
-//Testi tallentaa päivä preferenssiin
-        LocalDate paiva = LocalDate.now();
-        editor.putString("päivä", i+paiva.toString());
- */
 

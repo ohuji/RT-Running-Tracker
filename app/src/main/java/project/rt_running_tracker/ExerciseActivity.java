@@ -399,9 +399,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         editor.putFloat("matka", f);
         editor.putInt("askeleet", this.stepCount);
-        //Testi tallentaa päivä preferenssiin
-        //LocalDate paiva = LocalDate.now();
-        editor.putString("testi", "errr");
+
+        //Talletetaan preferenssiin päivämäärä, jonka eteen tulee indeksi
         editor.putString("päivä", i+LocalDate.now().toString());
 
         editor.commit();
