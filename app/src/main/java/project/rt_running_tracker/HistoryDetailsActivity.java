@@ -56,7 +56,7 @@ public class HistoryDetailsActivity extends AppCompatActivity {
                 .setText(HistoryData.getInstance().gethistoryData(i).getStep());
 
         ((TextView)findViewById(R.id.tvSavedJourney))
-                .setText(HistoryData.getInstance().gethistoryData(i).getJourney());
+                .setText(HistoryData.getInstance().gethistoryData(i).getJourney()+"m");
 
         ((TextView)findViewById(R.id.tvSavedCalories))
                 .setText(HistoryData.getInstance().gethistoryData(i).getCalories());
