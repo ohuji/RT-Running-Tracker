@@ -47,7 +47,7 @@ import java.time.LocalDate;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
-    //Sensori muuttujat
+    //Sensori instanssimuuttujat
     private SensorManager sensorManager;
     private Sensor sensor;
     private int stepCount;
@@ -55,7 +55,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private double stepLength;
     private double newLength;
 
-    //Google Maps muuttujat
+    //Google Maps instanssimuuttujat
     private GoogleMap mMap;
     private MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -71,6 +71,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
+
+        sensorPermissions();
 
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
@@ -113,6 +115,14 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    //Kysytään sensorien käyttöön luvat
+    public void sensorPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -132,16 +142,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     public void onMapReady(GoogleMap googleMap) {
 
         /*
-        Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
-
-        Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
-        mikä sallii laitteen hyödyntämään nykyistä sijantia
-
-        Kartan POI pisteet otetaan pois käyttämällä json tiedostoa
-
-        Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille
-
-        Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää
+            Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen.
+            Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
+            mikä sallii laitteen hyödyntämään nykyistä sijantia.
+            Kartan POI pisteet otetaan pois käyttämällä json tiedostoa.
+            Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille.
+            Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää.
         */
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -188,7 +194,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     protected void onPause() {
-
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
@@ -377,6 +382,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         startActivity(intent);
     }
 
+    //Käyttöliittymän päivitys/asetus
     private void updateUI () {
         TextView tv1 = findViewById(R.id.travelLengthView);
         tv1.setText(newLength + "m");
