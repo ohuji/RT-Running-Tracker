@@ -196,6 +196,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                     drawPolylines(googleMap);
                     i = 0;
                 }
+                i++;
             }
         }, 1000);
         this.mMap = googleMap;
