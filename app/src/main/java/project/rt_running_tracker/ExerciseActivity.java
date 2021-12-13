@@ -1,7 +1,5 @@
 package project.rt_running_tracker;
 
-import static java.security.AccessController.getContext;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,7 +44,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.time.LocalDate;
-import java.util.concurrent.TimeUnit;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
@@ -79,7 +76,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         permissions();
 
 
-
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
         this.stepCount = 0;
@@ -109,11 +105,16 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Log.d("sensor.present", "sensor is not present");
         }
 
-        //mMapView muuttuja tehdään MapView kartasta
-        mMapView = (MapView) findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
+        //Pyydetään luvat käyttäjän paikantamiseen ennen kartan luomista
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
-        mMapView.getMapAsync(this);
+            //mMapView muuttuja tehdään MapView kartasta
+            mMapView = (MapView) findViewById(R.id.mapView);
+            mMapView.onCreate(savedInstanceState);
+
+            mMapView.getMapAsync(this);
+        }
     }
 
     @Override
@@ -129,15 +130,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-        //Odotetaan muutama sekuntti, jotta käyttäjän sijainti haetaan vasta permissioneiden jälkeen
-        /*handler.postDelayed(runnable = new Runnable() {
-            public void run() {
-                handler.postDelayed(runnable, 2000);
-
-            }
-        }, 2000);
-        */
 
         /*
         Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
@@ -247,10 +239,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     private void permissions()  {
 
-        /*
-            Jos lupia sensorien käyttöön tai käyttäjän paikantamiseen ei olla annettu,
-            kysytään lupaa niiden käyttöön.
-         */
+        //Kysytään luvat käyttäjän askelien laskemiseen ja paikantamiseen
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
             || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
@@ -265,34 +254,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                             Manifest.permission.ACCESS_BACKGROUND_LOCATION
                     }, 101);
         }
-
-
-        /*
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 101);
-        } else {
-            Log.d("sensor.permission", "denied");
-        }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
-        } else {
-            Log.d("coarse_location.permission", "denied");
-        }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
-        } else {
-            Log.d("fine_location.permission", "denied");
-        }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 101);
-        } else {
-            Log.d("background_location.permission", "denied");
-        }
-        */
     }
 
     private void drawPolylines(GoogleMap googlemap) {
@@ -338,40 +299,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 }
             });
         }
-
-        /*
-        !! TÄMÄN ELSE IF EHTOLAUSEEN SISÄLLÖN VOI POISTAA KOKONAAN, JOS SATUT TESTAAMAAN TRACKINGIA EIKÄ SE HEITÄ PAIKANNUSTULOSTA AIEMPAA ENEMPÄÄ !!
-
-
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-
-                    //Haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
-
-                    if (location != null) {
-
-                        //Piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
-
-                        Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
-                                .add(new LatLng(lat, lng),
-                                        new LatLng(location.getLatitude(), location.getLongitude())));
-
-                        //Tehdään joku tagi
-                        polyline1.setTag("A");
-
-                        //Tallennetaan viimeisimmät koordinaatit muuttujiin
-                        lat = location.getLatitude();
-                        lng = location.getLongitude();
-                    }
-                }
-            });
-        }*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
