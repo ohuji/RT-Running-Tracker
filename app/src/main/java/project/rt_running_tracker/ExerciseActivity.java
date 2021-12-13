@@ -46,6 +46,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
@@ -76,6 +77,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         //Haetaan ja kysytään käyttäjän lupia
         permissions();
+
+
 
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
@@ -127,6 +130,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        //Odotetaan muutama sekuntti, jotta käyttäjän sijainti haetaan vasta permissioneiden jälkeen
+        /*handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, 2000);
+
+            }
+        }, 2000);
+        */
+
         /*
         Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
 
@@ -145,6 +157,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
             googleMap.setMyLocationEnabled(true);
 
+            //Haetaan map_style json tiedosto ja poistetaan POI pisteet
             googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.map_style));
