@@ -72,10 +72,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
-        //Haetaan ja kysytään käyttäjän lupia
-        permissions();
-
-
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
         this.stepCount = 0;
@@ -125,7 +121,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             sensorManager.registerListener(this, this.sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-        mMapView.onResume();
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            mMapView.onResume();
+        }
     }
 
     @Override
@@ -142,7 +142,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille
 
         Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää
-         */
+        */
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
@@ -188,7 +188,13 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     protected void onPause() {
-        mMapView.onPause();
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            mMapView.onPause();
+        }
+
         super.onPause();
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
@@ -204,13 +210,23 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            mMapView.onLowMemory();
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+            mMapView.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -237,31 +253,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         */
     }
 
-    private void permissions()  {
-
-        //Kysytään luvat käyttäjän askelien laskemiseen ja paikantamiseen
-
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
-            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
-            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
-            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) !=  PackageManager.PERMISSION_GRANTED)) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[] {
-                            Manifest.permission.ACTIVITY_RECOGNITION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    }, 101);
-        }
-    }
-
     private void drawPolylines(GoogleMap googlemap) {
 
         /*
         Tarkastetaan onko käyttäjä antanut luvat paikannukseen
         Mikäli on haetaan käyttäjän viimeisin sijainti
-         */
+        */
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
