@@ -9,19 +9,19 @@
     android:background="@color/teal_700">
 
     <TextView
-        android:id="@+id/stepView"
+        android:id="@+id/stepsValueView"
         android:layout_width="85dp"
-        android:layout_height="32dp"
+        android:layout_height="26dp"
         android:width="30dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.803"
+        app:layout_constraintHorizontal_bias="0.898"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stepsView"
-        app:layout_constraintVertical_bias="0.058" />
+        app:layout_constraintTop_toBottomOf="@+id/stepsTextView"
+        app:layout_constraintVertical_bias="0.085" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
@@ -37,19 +37,19 @@
         app:zOrderOnTop="true" />
 
     <TextView
-        android:id="@+id/travelLengthView"
-        android:layout_width="150dp"
-        android:layout_height="32dp"
+        android:id="@+id/travelLengthValueView"
+        android:layout_width="120dp"
+        android:layout_height="26dp"
         android:width="20dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/stepView"
-        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintEnd_toStartOf="@+id/stepsValueView"
+        app:layout_constraintHorizontal_bias="0.184"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/travelView"
-        app:layout_constraintVertical_bias="0.062" />
+        app:layout_constraintTop_toBottomOf="@+id/travelLenghtTextView"
+        app:layout_constraintVertical_bias="0.085" />
 
     <Button
         android:id="@+id/stopButtonView"
@@ -63,35 +63,49 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.802" />
+        app:layout_constraintVertical_bias="0.645" />
 
     <TextView
-        android:id="@+id/travelView"
-        android:layout_width="150dp"
-        android:layout_height="31dp"
+        android:id="@+id/travelLenghtTextView"
+        android:layout_width="120dp"
+        android:layout_height="26dp"
         android:text="Travel lenght"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintHorizontal_bias="0.109"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.098" />
+        app:layout_constraintVertical_bias="0.048" />
 
     <TextView
-        android:id="@+id/stepsView"
+        android:id="@+id/stepsTextView"
         android:layout_width="85dp"
-        android:layout_height="32dp"
+        android:layout_height="26dp"
         android:text="Steps"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.804"
+        app:layout_constraintHorizontal_bias="0.898"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.099" />
+        app:layout_constraintVertical_bias="0.048" />
+
+    <TextView
+        android:id="@+id/timerView"
+        android:layout_width="131dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/stopButtonView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapView"
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
