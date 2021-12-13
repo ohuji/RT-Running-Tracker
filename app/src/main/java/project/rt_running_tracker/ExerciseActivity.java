@@ -5,6 +5,7 @@ import static java.security.AccessController.getContext;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -45,6 +46,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
@@ -75,6 +77,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         //Haetaan ja kysytään käyttäjän lupia
         permissions();
+
+
 
         //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
 
@@ -126,6 +130,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        //Odotetaan muutama sekuntti, jotta käyttäjän sijainti haetaan vasta permissioneiden jälkeen
+        /*handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, 2000);
+
+            }
+        }, 2000);
+        */
+
         /*
         Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen
 
@@ -144,6 +157,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
             googleMap.setMyLocationEnabled(true);
 
+            //Haetaan map_style json tiedosto ja poistetaan POI pisteet
             googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.map_style));
@@ -238,6 +252,22 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             kysytään lupaa niiden käyttöön.
          */
 
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
+            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
+            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
+            || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) !=  PackageManager.PERMISSION_GRANTED)) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[] {
+                            Manifest.permission.ACTIVITY_RECOGNITION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    }, 101);
+        }
+
+
+        /*
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 101);
@@ -262,6 +292,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         } else {
             Log.d("background_location.permission", "denied");
         }
+        */
     }
 
     private void drawPolylines(GoogleMap googlemap) {
