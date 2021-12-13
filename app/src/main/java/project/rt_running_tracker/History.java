@@ -8,13 +8,15 @@ public class History {
     private String dateData;
     private float calories;
     private float journey;
+    private String time;
 
-    public History(int step, String dateData, float calories, float journey) {
+    public History(int step, String dateData, float calories, float journey, String time) {
 
         this.step = step;
         this.dateData = dateData;
         this.calories = calories;
         this.journey = journey;
+        this.time = time;
     }
 
     //Metodeilla saadaan haettua tarvittava tieto, joka näytetään HistoryDetailsActivityssä
@@ -28,6 +30,10 @@ public class History {
 
     public String getJourney() {
         return String.valueOf(this.journey);
+    }
+
+    public String getTime(){
+        return this.time;
     }
 
     public String toString(){

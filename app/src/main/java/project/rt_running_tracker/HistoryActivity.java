@@ -23,6 +23,7 @@ public class HistoryActivity extends AppCompatActivity {
     private String savedDateData;
     private float savedCalories;
     private float savedJourney;
+    private String savedTime;
 
     public static final String EXTRA = "HistoryDetailsActivityyn";
     private static final String TAG = "tsuptsup";
@@ -65,15 +66,6 @@ public class HistoryActivity extends AppCompatActivity {
         savedIndex = prefGet.getInt("i", 0);
     }
 
-    //Haetaan preferenssiin tallennettu checker arvo
-    /*
-    public void getSavedChecker() {
-        SharedPreferences prefGet = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
-        savedChecker = prefGet.getInt("checker", 0);
-    }
-
-     */
-
     //Tyhjennetään vanha lista, jolloin ei luoda montaa listaa näkymään
     public void clearHistoryList() {
         HistoryData.getInstance().clearList();
@@ -82,7 +74,6 @@ public class HistoryActivity extends AppCompatActivity {
     //Haetaan tarvittava juoksu data preferenssistä.
     public void getExcerciseData() {
 
-       // getSavedChecker();
         getSavedIndex();
 
         //Loopissa haetaan r muuttujan avulla kaikkien juoksujen tallennetut tiedot
@@ -92,17 +83,10 @@ public class HistoryActivity extends AppCompatActivity {
             savedCalories = prefGet1.getFloat("kalorit", 0);
             savedJourney = prefGet1.getFloat("matka", 0);
             savedDateData = prefGet1.getString("päivä", "1.1.0001");
+            savedTime = prefGet1.getString("harjoituksen kesto", "00.00");
 
-            //Lisätään listaan. Ja tallennetaan muuttunut checker arvo uudestaan preferenssiin
-            //if (savedChecker < savedIndex) {
-            //    savedChecker++;
-                HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney);
+                HistoryData.getInstance().add(savedStep, savedDateData, savedCalories, savedJourney, savedTime);
 
-            //    SharedPreferences prefPut = getSharedPreferences("SavedHistoryChecker", Activity.MODE_PRIVATE);
-            //    SharedPreferences.Editor prefEditor = prefPut.edit();
-            //    prefEditor.putInt("checker", savedChecker);
-            //    prefEditor.commit();
-            //}
         }
     }
 }

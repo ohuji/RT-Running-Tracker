@@ -49,8 +49,6 @@ public class HistoryDetailsActivity extends AppCompatActivity {
 
                 myImage.setImageBitmap(bitmap);
             }
-
-
         }
 
         //Tekstikenttään asetetaan indeksiä vastaavan juoksun tiedot
@@ -62,6 +60,9 @@ public class HistoryDetailsActivity extends AppCompatActivity {
 
         ((TextView)findViewById(R.id.tvSavedCalories))
                 .setText(HistoryData.getInstance().gethistoryData(i).getCalories());
+
+        ((TextView)findViewById(R.id.tvSavedTime))
+                .setText(HistoryData.getInstance().gethistoryData(i).getTime());
 
     }
 }

@@ -18,7 +18,6 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    //private int checker = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -35,8 +35,8 @@ public class HistoryData {
     }
 
     //Metodi lisää Arraylistiin
-    public void add (int step, String dateData, float calories, float journey){
-        History h = new History(step, dateData, calories, journey);
+    public void add (int step, String dateData, float calories, float journey, String time){
+        History h = new History(step, dateData, calories, journey, time);
         this.historyData.add(h);
     }
 }
