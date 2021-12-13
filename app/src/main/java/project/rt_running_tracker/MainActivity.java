@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         prefEditor.commit();
 
         */
-
     }
 
     //Nappien painellus metodit.
