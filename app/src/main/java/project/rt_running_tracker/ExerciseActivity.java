@@ -3,7 +3,6 @@ package project.rt_running_tracker;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -66,6 +65,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     Context context = this;
   
     private int i;
+    Timer sekunttikello = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,13 +176,22 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         //Toistetaan drawPolylines metodi X sekunnin välein
         handler.postDelayed(runnable = new Runnable() {
+            int i = 0;
             public void run() {
-                handler.postDelayed(runnable, 3000);
+                handler.postDelayed(runnable, 1000);
 
-                drawPolylines(googleMap);
+                Log.d("debug", String.valueOf(i));
 
+                sekunttikello.addSecond();
+
+                updateUI();
+
+                if (i >= 3) {
+                    drawPolylines(googleMap);
+                    i = 0;
+                }
             }
-        }, 3000);
+        }, 1000);
         this.mMap = googleMap;
     }
 
@@ -356,6 +365,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         editor.putFloat("matka", f);
         editor.putInt("askeleet", this.stepCount);
+        editor.putString("harjoituksen kesto", sekunttikello.toString());
 
         //Talletetaan preferenssiin päivämäärä, jonka eteen tulee indeksi
         editor.putString("päivä", i+LocalDate.now().toString());
@@ -373,14 +383,19 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         //Pysäyttää handlerin
         handler.removeCallbacks(runnable);
 
+        //Nollaa laskurin
+        sekunttikello.resetTimer();
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     private void updateUI () {
-        TextView tv1 = findViewById(R.id.travelLengthView);
-        tv1.setText(newLength + "m");
-        TextView tv = findViewById(R.id.stepView);
-        tv.setText(this.stepCount + "");
+        TextView tv = findViewById(R.id.travelLengthValueView);
+        tv.setText(newLength + "m");
+        TextView tv1 = findViewById(R.id.stepsValueView);
+        tv1.setText(this.stepCount + "");
+        TextView tv3 = findViewById(R.id.timerView);
+        tv3.setText(sekunttikello.toString());
     }
 }

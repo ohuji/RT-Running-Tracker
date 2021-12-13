@@ -1,41 +1,48 @@
 package project.rt_running_tracker;
 
 public class Timer {
-    private int sekunnit;
-    private int minuutit;
-    private int tunnit;
+    private int seconds;
+    private int minutes;
+    private int hours;
 
-    public Timer(int sekunnit, int minuutit, int tunnit)    {
-        this.sekunnit = sekunnit;
-        this.minuutit = minuutit;
-        this.tunnit = tunnit;
+    public Timer()    {
+        this.seconds = 0;
+        this.minutes = 0;
+        this.hours = 0;
     }
 
-    public int getSekunnit() {
-        return sekunnit;
+    public void addSecond()  {
+        this.seconds++;
+
+        if (this.seconds >= 60) {
+            this.minutes++;
+            this.seconds = 0;
+        }
+        if (this.minutes >= 60) {
+            this.hours++;
+            this.minutes = 0;
+        }
     }
 
-    public int getMinuutit() {
-        return minuutit;
+    public void resetTimer()    {
+        this.seconds = 0;
+        this.minutes = 0;
+        this.hours = 0;
     }
 
-    public int getTunnit() {
-        return tunnit;
+    public int getSeconds() {
+        return this.seconds;
     }
 
-    public void setSekunnit(int sekunnit) {
-        this.sekunnit = sekunnit;
+    public int getMinutes() {
+        return this.minutes;
     }
 
-    public void setMinuutit(int minuutit) {
-        this.minuutit = minuutit;
-    }
-
-    public void setTunnit(int tunnit) {
-        this.tunnit = tunnit;
+    public int getHours() {
+        return this.hours;
     }
 
     public String toString()    {
-        return this.tunnit + " tuntia, " + this.minuutit + " minuuttia ja" + this.sekunnit + " sekuntia";
+        return this.hours + "." + this.minutes + "." + this.seconds;
     }
 }
