@@ -63,9 +63,13 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private double lat = 0.0;
     private double lng = 0.0;
     Context context = this;
-  
+
+    //Muut instanssimuuttujat
     private int i;
     Timer sekunttikello = new Timer();
+    private double caloriesBurned;
+    private double caloriesPerMin;
+    private double newCaloriesPerMin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +78,24 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         sensorPermissions();
 
-        //Nollataan askel laskurin ja matkan laskurin arvot aina kun aktiviteetti avataan
+        //Nollataan askel laskurin, matkan laskurin ja kalori laskurin arvot aina kun aktiviteetti avataan
 
         this.stepCount = 0;
         this.travelLength = 0.0;
+        this.caloriesBurned = 0.0;
+
+        /*
+            Asetetaan 8.5 MET kerroin ja lasketaan met * paino * 3.5 / 200,
+            että saadaan kalorien kulutus
+        */
+
+        double met = 8.5;
+
+        SharedPreferences userPref = getSharedPreferences("SavedUserProfileData", Activity.MODE_PRIVATE);
+
+        int weight = userPref.getInt("User weight", 0);
+
+        this.caloriesBurned = met * weight * 3.5 / 200.0;
 
         /*
             Asetetaan 0.415 kerroin, koska pituus * 0.415 = askelpituus.
@@ -86,8 +104,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
          */
 
         double multiplier = 0.415;
-
-        SharedPreferences userPref = getSharedPreferences("SavedUserProfileData", Activity.MODE_PRIVATE);
 
         int height = userPref.getInt("User height", 0);
 
@@ -248,12 +264,18 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         if (event.sensor == this.sensor) {
             this.stepCount++;
 
-            this.travelLength = this.stepCount * this.stepLength / 100.0;
+            //Lasketaan matka ja kalorit per minuutti.
 
-            //Muunnetaan double kahden desimaalin tarkaksi, käyttäen Javan BigDecimalia.
+            this.travelLength = this.stepCount * this.stepLength / 100.0;
+            this.caloriesPerMin = this.caloriesBurned * sekunttikello.getMinutes();
+
+            //Muunnetaan doublet kahden desimaalin tarkaksi, käyttäen Javan BigDecimalia.
 
             BigDecimal bd = new BigDecimal(this.travelLength).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal bd2 = new BigDecimal(this.caloriesPerMin).setScale(2, RoundingMode.HALF_UP);
+
             newLength = bd.doubleValue();
+            newCaloriesPerMin = bd2.doubleValue();
 
             updateUI();
         }
@@ -367,8 +389,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         SharedPreferences.Editor editor = runPref.edit();
 
         Float f = (float) newLength;
+        Float f2 = (float) newCaloriesPerMin;
 
         editor.putFloat("matka", f);
+        editor.putFloat("kalorit", f2);
         editor.putInt("askeleet", this.stepCount);
         editor.putString("harjoituksen kesto", sekunttikello.toString());
 
@@ -400,8 +424,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         TextView tv = findViewById(R.id.travelLengthValueView);
         tv.setText(newLength + "m");
         TextView tv1 = findViewById(R.id.stepsValueView);
-        tv1.setText(this.stepCount + "");
+        tv1.setText(String.valueOf(this.stepCount));
         TextView tv3 = findViewById(R.id.timerView);
         tv3.setText(sekunttikello.toString());
+        TextView tv4 = findViewById(R.id.caloriesValueView);
+        tv4.setText(String.valueOf(this.newCaloriesPerMin));
     }
 }

@@ -5,4 +5,7 @@
     <string name="profile_button">Profile</string>
     <string name="content_desc_main">Running track</string>
     <string name="stop_button">Stop</string>
+    <string name="steps_tv">Steps</string>
+    <string name="travel_tv">Travel length</string>
+    <string name="calories_tv">Calories Burned</string>
 </resources>
