@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ExerciseActivity"
-    android:background="@color/teal_700">
+    android:background="@color/light_blue">
 
     <TextView
         android:id="@+id/stepsValueView"
@@ -18,7 +18,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.898"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/stepsTextView"
         app:layout_constraintVertical_bias="0.085" />
@@ -45,15 +45,16 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.027"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/travelLenghtTextView"
         app:layout_constraintVertical_bias="0.085" />
 
     <Button
         android:id="@+id/stopButtonView"
-        android:layout_width="131dp"
-        android:layout_height="73dp"
+        android:layout_width="121dp"
+        android:layout_height="65dp"
         android:onClick="onStopButtonClick"
         android:text="@string/stop_button"
         android:textColor="@color/grey"
@@ -72,9 +73,11 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.027"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.048" />
+        app:layout_constraintVertical_bias="0.255" />
 
     <TextView
         android:id="@+id/stepsTextView"
@@ -86,38 +89,37 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.898"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.048" />
+        app:layout_constraintVertical_bias="0.255" />
 
     <TextView
         android:id="@+id/timerView"
-        android:layout_width="131dp"
+        android:layout_width="121dp"
         android:layout_height="50dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/stopButtonView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/caloriesValueView"
-        android:layout_width="85dp"
+        android:layout_width="100dp"
         android:layout_height="26dp"
         android:textAlignment="center"
         android:textColor="#FFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/timerView"
-        app:layout_constraintEnd_toStartOf="@+id/stepsValueView"
-        app:layout_constraintHorizontal_bias="0.431"
-        app:layout_constraintStart_toEndOf="@+id/travelLengthValueView"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
-        app:layout_constraintVertical_bias="0.488" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/caloriesTextView"
+        app:layout_constraintVertical_bias="0.304" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -127,16 +129,18 @@
         app:layout_constraintGuide_begin="512dp" />
 
     <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/caloriesTextView"
+        android:layout_width="150dp"
+        android:layout_height="26dp"
         android:text="@string/calories_tv"
         android:textAlignment="center"
         android:textColor="#FFFF"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/travelLengthValueView"
-        app:layout_constraintEnd_toStartOf="@+id/stepsTextView"
-        app:layout_constraintStart_toEndOf="@+id/travelLenghtTextView"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapView"
+        app:layout_constraintVertical_bias="0.057" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
