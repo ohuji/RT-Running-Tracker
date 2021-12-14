@@ -1,5 +1,11 @@
 package project.rt_running_tracker;
 
+/** Profiin luonti aktiviteetti
+ * @Janne Hakkarainen
+ * @Juho Salomäki
+ * Remy Silanto
+ */
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -28,6 +34,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         getProfileData();
 
+        /**
+         * Etsitään id:n avulla oikea tekstikenttä johon laitetaan muuttujan arvo
+         */
         //Haetaan tekstinsyöttökenttään tiedot preferensseistä
         TextView settii = findViewById(R.id.editUserName);
         settii.setText(savedUserName);
@@ -40,6 +49,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         genderSelected();
 
+        /**
+         * Tarkastetaan mikä sukupuoli on muuttujassa savedUserGender ja sen perusteella
+         * asetetaan radiobutton painetuksi
+         */
         //Tarkastetaan mikä sukupuoli on preferenssissä ja asetaan radiobutton valituksi sen mukaan
         if(savedUserGender.equals("Male")){
             RadioButton maleRadioButton = (RadioButton) findViewById(R.id.rbMale);
@@ -55,14 +68,27 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * radio painike kuuntelija. Toteuttaa metodin genderSelected()
+     * @param view
+     */
     public void onRadioButtonClicked(View view) {
         genderSelected();
     }
 
+    /**
+     * Save painiketta painettaessa toteutetaan metodi saveProfile()
+     * @param view
+     */
     public void bSave(View view) {
         saveProfile();
     }
 
+    /**
+     * Metodi saveProfile() id:n avulla saadaan tekstikenttään syötetyt tiedot ja muutetaan ne tarvittaessa stringiksi.
+     * Luodaan uusi profiili
+     * Tallennetaan preferenssiin saadut tiedot
+     */
     //Tallennetaan syötekentässä oleva tieto preferenssiin
     public void saveProfile() {
 
@@ -91,6 +117,9 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Haetaan preferenssistä profiili data jotta se voidaan asettaa tekstikenttiin
+     */
     //Haetaan preferenssissä olevan profiilin tiedot
     public void getProfileData() {
         SharedPreferences prefGet = getSharedPreferences("SavedUserProfileData" ,Activity.MODE_PRIVATE);
@@ -100,6 +129,10 @@ public class ProfileActivity extends AppCompatActivity {
         savedUserGender = prefGet.getString("User gender", "Other");
     }
 
+    /**
+     * radiobutton id:n avulla saadaan selville mikä on painettuna ja palautetaan arvo sen mukaan.
+     * @return palauttaa joko arvon Male, Female, Other
+     */
     //Katsotaan mikä radiobutton on painettuna ja palautetaan sen perusteella sukupuoli Stringinä, joka voidaan tallentaa preferenssiin
     public String genderSelected() {
         RadioGroup rg = (RadioGroup) findViewById(R.id.radioGroupGender);

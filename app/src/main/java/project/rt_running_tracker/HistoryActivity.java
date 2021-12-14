@@ -1,4 +1,9 @@
 package project.rt_running_tracker;
+        /** Historia aktiviteetti
+         * @Janne Hakkarainen
+         * @Juho Salomäki
+         * Remy Silanto
+         */
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +23,6 @@ import java.util.ArrayList;
 public class HistoryActivity extends AppCompatActivity {
 
     private int savedIndex;
-    private int savedChecker;
     private int savedStep;
     private String savedDateData;
     private float savedCalories;
@@ -33,6 +37,9 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        /**
+         * Haetaan aluksi metodeilla tarvittavat tiedot listan rakentamiseen. Ja tyhjennetään olemassa oleva lista
+         */
         //Haetaan aluksi metodeilla tarvittavat tiedot listan rakentamiseen. Ja tyhjennetään olemassa oleva lista
         clearHistoryList();
 
@@ -40,6 +47,9 @@ public class HistoryActivity extends AppCompatActivity {
 
         getExcerciseData();
 
+        /**
+         * Rakennetaan lista, johon saadaan näkyviin juoksujen indeksi + pvm
+         */
         //Rakennetaan lista, johon saadaan näkyviin juoksujen indeksi + pvm
         ListView lv = (ListView) findViewById(R.id.lvHistoryData);
 
@@ -49,6 +59,10 @@ public class HistoryActivity extends AppCompatActivity {
                 HistoryData.getInstance().getHistoryData())
         );
 
+        /**
+         * Kuuntelijan avulla saadaan klikatun indeksi ja viedään se seuraavaan aktiviteettiin
+         * Siirrytään HistoryDetailsActivityyn
+         */
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -60,17 +74,28 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Metodilla haetaan preferenssistä tallennetun indeksin arvo
+     */
     //Haetaan preferenssiin tallennettu indeksi
     public void getSavedIndex() {
         SharedPreferences prefGet = getSharedPreferences("index", Activity.MODE_PRIVATE);
         savedIndex = prefGet.getInt("i", 0);
     }
 
+    /**
+     * Tyhjennetään näkymän lista, ei synny duplikaatti listoja
+     */
     //Tyhjennetään vanha lista, jolloin ei luoda montaa listaa näkymään
     public void clearHistoryList() {
         HistoryData.getInstance().clearList();
     }
 
+    /**
+     * Haetaan tarvittava juoksu data preferenssistä.
+     * Loopissa haetaan r muuttujan avulla kaikkien juoksujen tallennetut tiedot
+     * Lisätään data listaan
+     */
     //Haetaan tarvittava juoksu data preferenssistä.
     public void getExcerciseData() {
 
