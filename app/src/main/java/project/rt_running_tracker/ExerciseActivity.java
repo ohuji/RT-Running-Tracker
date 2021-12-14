@@ -44,6 +44,12 @@ import java.math.RoundingMode;
 
 import java.time.LocalDate;
 
+/**
+ * <p>Suoritus aktiviteetti, käynnistetään kun käyttäjä painaa suorituksen aloitus nappia</p>
+ *
+ * @author Juho Salomäki, Janne Hakkarainen ja Remy Silanto.
+ */
+
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener, OnMapReadyCallback {
 
     //Sensori instanssimuuttujat
@@ -71,6 +77,14 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private double caloriesPerMin;
     private double newCaloriesPerMin;
 
+    /**
+     * <p>onCreate lifecycle metodi.</p>
+     * <p>Kun luodaan Excercise activity, kutsutaan sensorPermissions()
+     * metodia että päästään käyttäjän sensoritietoihin käsiksi. Nollataan laskurit.
+     * Lasketaan kalorien kulutus ja askelpituus. Asetetaan sensori. Jos ollaan saatu
+     * paikannusluvat niin asetetaan kartta.</p>
+     * @param savedInstanceState saadaan savedInstanceState.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +153,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * <p>onResume() lifecycle metodi.</p>
+     * <p>Rekisteröidään sensorille kuuntelija, jos getDefaultSensor ei ole null.
+     * Jos paikannusluvat on saatu niin kutsutaan mMapViewin onResume() metodia.</p>
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -218,6 +237,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         this.mMap = googleMap;
     }
 
+    /**
+     * <p>onPause() lifecycle metodi.</p>
+     * <p>Jos on paikannusluvat niin kutsutaan mMapViewin onPause() metodia.
+     * Jos getDefaultSensor() ei ole null niin peruutetaan sensorin kuuntelijan
+     * rekisteröinti.</p>
+     */
     @Override
     protected void onPause() {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -260,6 +285,13 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * <p>Metodi, jota kutsutaan kun sensorissa tapahtuu muutos</p>
+     * <p>Jos parametrina saatu sensori on sama, kun tallennettu sensori, niin
+     * lisätään yhdellä askelmittaria, lasketaan matka sekä kalorit per minuutti
+     * ja päivitetään UI kutsumalla metodia updateUI()</p>
+     * @param event saadaan event.
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor == this.sensor) {
@@ -335,10 +367,28 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * <p>Stop napin painamis metodi</p>
+     * <p>Luodaan callback metodista onSnapshotReady(),
+     * jota kutsutaan vasta kun kartta on latautunut. Kun snapshot on otettu
+     * lisätään matka, kalorit, askeleet ja kesto preferensseihin. Myös indeksiä,
+     * jonka perusteella kuva, sekä preferenssi tiedosto nimetään korotetaan yhdellä
+     * ja lisätään takaisin preferensseihin. Lopussa resetetaan sekuntikello ja
+     * käynnistetään main aktiviteetti.</p>
+     * @param v saadaan view.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStopButtonClick(View v) {
         final GoogleMap.SnapshotReadyCallback snapshotReadyCallback = new GoogleMap.SnapshotReadyCallback() {
             Bitmap bitmap;
+
+            /**
+             * <p>Snapshot metodi.</p>
+             * <p>Jos indexi preferenssi löytyy niin käytetään sen arvoa, jos taas ei löydy
+             * niin luodaan uusi preferenssi tiedosto. Luodaan kuva PNG muodossa.
+             * Virheen tapahtuessa printataan stacktrace.</p>
+             * @param snap saadaan bitmap.
+             */
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onSnapshotReady(@Nullable Bitmap snap) {
@@ -376,6 +426,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         GoogleMap.OnMapLoadedCallback mapLoadedCallback = new GoogleMap.OnMapLoadedCallback() {
             @Override
+            /**
+             * <p>Kun kartta on latautunut otetaan snapshotti.</p>
+             */
             public void onMapLoaded() {
                 mMap.snapshot(snapshotReadyCallback);
             }
@@ -420,7 +473,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         startActivity(intent);
     }
 
-    //Käyttöliittymän päivitys/asetus
+    /**
+     * <p>Käyttöliittymän päivitys/asetus.</p>
+     */
     private void updateUI () {
         TextView tv = findViewById(R.id.travelLengthValueView);
         tv.setText(newLength + "m");
