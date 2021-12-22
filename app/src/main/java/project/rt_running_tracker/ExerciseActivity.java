@@ -92,7 +92,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         sensorPermissions();
 
-        //Nollataan askel laskurin, matkan laskurin ja kalori laskurin arvot aina kun aktiviteetti avataan
+        //Nollataan askel laskurin, matkan laskurin ja kalori laskurin arvot aina kun aktiviteetti avataan.
 
         this.stepCount = 0;
         this.travelLength = 0.0;
@@ -100,7 +100,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         /*
             Asetetaan 8.5 MET kerroin ja lasketaan met * paino * 3.5 / 200,
-            että saadaan kalorien kulutus
+            että saadaan kalorien kulutus.
         */
 
         double met = 8.5;
@@ -133,11 +133,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Log.d("sensor.present", "sensor is not present");
         }
 
-        //Pyydetään luvat käyttäjän paikantamiseen ennen kartan luomista
+        //Pyydetään luvat käyttäjän paikantamiseen ennen kartan luomista.
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
-            //mMapView muuttuja tehdään MapView kartasta
+            //mMapView muuttuja tehdään MapView kartasta.
             mMapView = (MapView) findViewById(R.id.mapView);
             mMapView.onCreate(savedInstanceState);
 
@@ -145,7 +145,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
-    //Kysytään sensorien käyttöön luvat
+    //Kysytään sensorien käyttöön luvat.
     public void sensorPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
@@ -173,41 +173,50 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    /**
+     * <p>Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen.</p>
+     * <p>Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
+     * mikä sallii laitteen hyödyntämään nykyistä sijantia.</p>
+     * <p>Kartan POI pisteet otetaan pois käyttämällä json tiedostoa.</p>
+     * <p>Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille.</p>
+     * <p>Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää.</p>
+     * <p>Toistetaan drawPolyline metodia sekä pyöritetään sekunttikelloa handler loopilla</p>
+     * @param googleMap saa GoogleMap:in arvokseen
+     */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-        /*
-            Tarkastetaan onko käyttäjä antanut luvat laitteen paikannukseen.
-            Jos luvat on annettu, käytetään setMyLocationEnabled metodia sallimaan "location layer",
-            mikä sallii laitteen hyödyntämään nykyistä sijantia.
-            Kartan POI pisteet otetaan pois käyttämällä json tiedostoa.
-            Haetaan ja asetetaan alkukoordinaatit lat ja lng muuttujille.
-            Asetetaan kartta käyttäjän kohdalle lat ja lng muuttujilla ja zoomataan lähelle käyttäjää.
-        */
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
             googleMap.setMyLocationEnabled(true);
 
-            //Haetaan map_style json tiedosto ja poistetaan POI pisteet
+            //Haetaan map_style json tiedosto ja poistetaan POI pisteet.
             googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.map_style));
 
-            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan.
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+
+                /**
+                 * <p>onSuccess metodia käytetään, jos onnistuttiin saamaan käyttäjän sijainti</p>
+                 * <p>Asetetaan lat ja lng muuttujille arvot</p>
+                 * <p>Kohdistetaan kartan kamera käyttäjään ja zoomataan lähemmäksi</p>
+                 * @param location saa käyttäjän sijainnin arvokseen
+                 */
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
 
-                        //Asetetaan lat ja lng muuttujat
+                        //Asetetaan lat ja lng muuttujat.
                         lat = location.getLatitude();
                         lng = location.getLongitude();
 
-                        //Liikutetaan kamera käyttäjän kohdalle ja zoomataan lähemmäs
+                        //Liikutetaan kamera käyttäjän kohdalle ja zoomataan lähemmäs.
                         LatLng currentLocation = new LatLng(lat, lng);
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15.0f));
                     }
@@ -215,13 +224,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             });
         }
 
-        //Toistetaan drawPolylines metodi X sekunnin välein
+        /**
+         * <p>Metodi toistaa drawPolylines metodia 3 sekunnin välein
+         * ja lisää sekunttikelloon sekunnin 1 sekunnin välein.</p>
+         */
+
         handler.postDelayed(runnable = new Runnable() {
             int i = 0;
             public void run() {
                 handler.postDelayed(runnable, 1000);
-
-                Log.d("debug", String.valueOf(i));
 
                 sekunttikello.addSecond();
 
@@ -239,8 +250,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     /**
      * <p>onPause() lifecycle metodi.</p>
-     * <p>Jos on paikannusluvat niin kutsutaan mMapViewin onPause() metodia.
-     * Jos getDefaultSensor() ei ole null niin peruutetaan sensorin kuuntelijan
+     * <p>Jos on paikannusluvat niin kutsutaan mMapViewin onPause() metodia.</p>
+     * <p>Jos getDefaultSensor() ei ole null niin peruutetaan sensorin kuuntelijan
      * rekisteröinti.</p>
      */
     @Override
@@ -322,43 +333,58 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         */
     }
 
+    /**
+     * <p>Metodi piirtää Google Maps View:iin kahden koordinaatiston välille käyttäjää seuraavan reaaliaikaisen polylinen
+     * hyödyntämällä onMapReady metodissa olevaa handler looppia.</p>
+     * <p>Ensimmäinen koordinaatisto on aina aiemman kierroksen viimeinen koordinaatisto,
+     * paitsi aivan ensimmäisellä kerralla käytetään jo aiemmin onMapReady metodissa asetettua koordinaatistoa.</p>
+     * <p>Toinen koordinaatisto on tällä kierroksella saatu uusi koordinaatisto.</p>
+     * <p>Tällä tavalla saadaan piirrettyä katkeamaton polyline käyttäjän juoksusta GoogleMaps:iin.</p>
+     * @param googlemap saa GoogleMaps:in arvokseen
+     */
+
     private void drawPolylines(GoogleMap googlemap) {
 
         /*
-        Tarkastetaan onko käyttäjä antanut luvat paikannukseen
-        Mikäli on haetaan käyttäjän viimeisin sijainti
+        Tarkastetaan onko käyttäjä antanut luvat paikannukseen.
+        Mikäli on haetaan käyttäjän viimeisin sijainti.
         */
 
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
-            //LocationServices avulla tallennetaan paikannustiedot muuttujaan
+            //LocationServices avulla tallennetaan paikannustiedot muuttujaan.
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+
+                /**
+                 * <p>onSuccess metodia käytetään, jos onnistuttiin saamaan käyttäjän sijainti.</p>
+                 * <p>Metodissa tapahtuu itse polylinen piirto ja sen ulkonäön asettaminen.</p>
+                 * <p>Metodissa asetetaan myös lat ja lng muuttujien arvot seuraavaa kierrosta varten.</p>
+                 * @param location saa käyttäjän sijainnin arvokseen.
+                 */
+
                 @Override
                 public void onSuccess(Location location) {
 
-                    //Haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella
-
+                    //Haettiin käyttäjän viimeisin sijainti ja nyt tarkistetaan vielä löytyihän se if lauseella.
                     if (location != null) {
 
-                        //Piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille
-
+                        //Piirretään polyline aiemmin tallennettujen lat ja lng muuttujien arvojen ja nykyisten koordinaattien välille.
                         Polyline polyline1 = googlemap.addPolyline(new PolylineOptions()
                                 .add(new LatLng(lat, lng),
                                         new LatLng(location.getLatitude(), location.getLongitude())));
 
-                        //Asettaa polylinen värin, leveyden ja päätyjen muodon
+                        //Asettaa polylinen värin, leveyden ja päätyjen muodon.
                         polyline1.setColor(ContextCompat.getColor(context, R.color.teal_200));
                         polyline1.setWidth(20);
                         polyline1.setEndCap(new RoundCap());
                         polyline1.setStartCap(new RoundCap());
 
-                        //Tehdään joku tagi
                         polyline1.setTag("A");
 
-                        //Tallennetaan viimeisimmät koordinaatit muuttujiin
+                        //Tallennetaan viimeisimmät koordinaatit muuttujiin.
                         lat = location.getLatitude();
                         lng = location.getLongitude();
                     }
@@ -373,7 +399,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
      * jota kutsutaan vasta kun kartta on latautunut. Kun snapshot on otettu
      * lisätään matka, kalorit, askeleet ja kesto preferensseihin. Myös indeksiä,
      * jonka perusteella kuva, sekä preferenssi tiedosto nimetään korotetaan yhdellä
-     * ja lisätään takaisin preferensseihin. Lopussa resetetaan sekuntikello ja
+     * ja lisätään takaisin preferensseihin. Lopussa nollataan sekuntikello, pysäytetään handler looppi ja
      * käynnistetään main aktiviteetti.</p>
      * @param v saadaan view.
      */
@@ -450,7 +476,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         editor.putInt("askeleet", this.stepCount);
         editor.putString("harjoituksen kesto", sekunttikello.toString());
 
-        //Talletetaan preferenssiin päivämäärä, jonka eteen tulee indeksi
+        //Talletetaan preferenssiin päivämäärä, jonka eteen tulee indeksi.
         editor.putString("päivä", i+LocalDate.now().toString());
 
         editor.commit();
@@ -463,10 +489,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         indexEditor.commit();
 
 
-        //Pysäyttää handlerin
+        //Pysäyttää handlerin.
         handler.removeCallbacks(runnable);
 
-        //Nollaa laskurin
+        //Nollaa laskurin.
         sekunttikello.resetTimer();
 
         Intent intent = new Intent(this, MainActivity.class);

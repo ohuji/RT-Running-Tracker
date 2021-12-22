@@ -5,13 +5,24 @@ public class Timer {
     private int minutes;
     private int hours;
 
+    /**
+     * Asetetaan oliomuuttujille seconds, minutes ja hours alkuarvot.
+     */
+
     public Timer()    {
         this.seconds = 0;
         this.minutes = 0;
         this.hours = 0;
     }
 
-    public void addSecond()  {
+    /**
+     * Metodi lisää yhden oliomuuttujaan seconds ja tarkastaa onko sekunteja kertynyt 60,
+     * mikäli on nollataan sekuntien määrä ja lisätään yksi minuutti oliomuuttujaan minutes.
+     * Tarkistetaan vielä, onko minuutteja kertynyt 60,
+     * mikäli on nollataan minuutit ja lisätään yksi oliomuuttujaan hours eli tunteihin.
+     */
+
+    protected void addSecond()  {
         this.seconds++;
 
         if (this.seconds >= 60) {
@@ -24,23 +35,27 @@ public class Timer {
         }
     }
 
-    public void resetTimer()    {
+    /**
+     * @return minutes oliomuuttujan arvon.
+     */
+
+    public int getMinutes() {
+        return minutes;
+    }
+
+    /**
+     * Metodi nollaa kaikki oliomuuttujat.
+     */
+
+    protected void resetTimer()    {
         this.seconds = 0;
         this.minutes = 0;
         this.hours = 0;
     }
 
-    public int getSeconds() {
-        return this.seconds;
-    }
-
-    public int getMinutes() {
-        return this.minutes;
-    }
-
-    public int getHours() {
-        return this.hours;
-    }
+    /**
+     * @return merkkijonona oliomuuttujien arvot muodossa: "hours.minutes.seconds".
+     */
 
     public String toString()    {
         return this.hours + "." + this.minutes + "." + this.seconds;
